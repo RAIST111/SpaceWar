@@ -11,11 +11,17 @@ namespace SpaceWar.Classes
         private Vector2 _position;
         private Texture2D _texture;
         private float _speed;
+        private Rectangle _collision;
+        public Rectangle Collision
+        { 
+            get { return _collision; } 
+        }
         public Player() 
         {
             _position = new Vector2(30, 30);
             _texture = null;
             _speed = 7;
+            _collision = new Rectangle((int)_position.X,(int)_position.Y, 0, 0);
         }
         public void LoadContent(ContentManager content)
         {
@@ -60,8 +66,9 @@ namespace SpaceWar.Classes
             {
                 _position.X = widthScreen- _texture.Width;
             }
-              
+
             #endregion
+            _collision = new Rectangle((int)_position.X, (int)_position.Y, _texture.Width, _texture.Height);
         }
         public void Draw(SpriteBatch spriteBatch)
         {
