@@ -9,6 +9,8 @@ namespace SpaceWar
 {
     public class Game1 : Game
     {
+        // константы
+        private const int COUNT_ASTEROIDS = 10;
 
         //инструменты
         private GraphicsDeviceManager _graphics;
@@ -18,6 +20,7 @@ namespace SpaceWar
         private Player _player;
         private Space _space;
         private Asteroid _asteroid;
+        
 
         private List<Asteroid> _asteroids;
         public Game1()
@@ -34,6 +37,7 @@ namespace SpaceWar
             _player = new Player();
             _space = new Space();
             // _asteroid = new Asteroid();
+            
             _asteroids = new List<Asteroid>();
             base.Initialize();
 
@@ -46,7 +50,8 @@ namespace SpaceWar
             _space.LoadContent(Content);
             _player.LoadContent(Content);
             //_asteroid.LoadContent(Content);
-            for (int i = 0; i < 10; i++)
+            
+            for (int i = 0; i < COUNT_ASTEROIDS; i++)
             {
                 LoadAsteroid();
             }
@@ -59,8 +64,9 @@ namespace SpaceWar
                 Exit();
 
             // TODO: Add your update logic here
-            _player.Update(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            _player.Update(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight, Content);
             _space.Update();
+           
             UpdateAsteroids();
             // _asteroid.Update();
 
@@ -77,6 +83,7 @@ namespace SpaceWar
                 _space.Draw(_spriteBatch);
                 _player.Draw(_spriteBatch);
                 // _asteroid.Draw(_spriteBatch);
+                
                 foreach (Asteroid asteroid in _asteroids)
                 {
                     asteroid.Draw(_spriteBatch);
@@ -110,7 +117,7 @@ namespace SpaceWar
 
             }
             // загружаем доп элементы в игру
-            if (_asteroids.Count < 10)
+            if (_asteroids.Count < COUNT_ASTEROIDS)
             {
                 LoadAsteroid();
             }

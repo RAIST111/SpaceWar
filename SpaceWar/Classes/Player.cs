@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace SpaceWar.Classes
 {
@@ -12,6 +14,11 @@ namespace SpaceWar.Classes
         private Texture2D _texture;
         private float _speed;
         private Rectangle _collision;
+        //weapon
+        private List<Bullet> _bulletList = new List<Bullet>(); // магазин патронов
+        //time
+        private int _timer = 0;
+        private int _maxTime = 15d;
         public Rectangle Collision
         { 
             get { return _collision; } 
@@ -27,7 +34,7 @@ namespace SpaceWar.Classes
         {
             _texture = content.Load<Texture2D>("player");
         }
-        public void Update(int widthScreen, int heightScreen)
+        public void Update(int widthScreen, int heightScreen, ContentManager content)
         {
             KeyboardState keyboard = Keyboard.GetState();
 
@@ -49,6 +56,7 @@ namespace SpaceWar.Classes
                 _position.X += _speed;
             }
             #endregion
+
             #region Bounds
             if(_position.X <= 0)
             {
@@ -68,11 +76,33 @@ namespace SpaceWar.Classes
             }
 
             #endregion
+
             _collision = new Rectangle((int)_position.X, (int)_position.Y, _texture.Width, _texture.Height);
+            if(_timer <= _maxTime)
+            {
+                _timer++;
+            }
+            if (keyboard.IsKeyDown(Keys.Space) && _timer >= _maxTime)
+            {
+                Bullet bullet = new Bullet();
+                bullet.Position = new Vector2(_position.X + _texture.Width / 2 - bullet.Width / 2, _position.Y - bullet.Height /2);
+                bullet.LoadContent(content);
+                _bulletList.Add(bullet);
+                _timer = 0;
+            }
+            //работа со всемти пульками в игре
+            foreach (Bullet bullet in _bulletList)
+            {
+                bullet.Update();
+            }
         }
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, _position, Color.White);
+            foreach (Bullet bullet in _bulletList)
+            {
+                bullet.Draw(spriteBatch);
+            }
         }
     }
 }
