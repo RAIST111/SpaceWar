@@ -18,11 +18,15 @@ namespace SpaceWar.Classes
         private List<Bullet> _bulletList = new List<Bullet>(); // магазин патронов
         //time
         private int _timer = 0;
-        private int _maxTime = 15d;
+        private int _maxTime = 15;
         public Rectangle Collision
         { 
             get { return _collision; } 
         }
+        public List<Bullet> Bullets
+        {
+            get { return _bulletList; }
+        }                                                               
         public Player() 
         {
             _position = new Vector2(30, 30);
@@ -94,6 +98,15 @@ namespace SpaceWar.Classes
             foreach (Bullet bullet in _bulletList)
             {
                 bullet.Update();
+
+            }
+            for (int i = 0; i < _bulletList.Count; i++)
+            {
+                if (_bulletList[i].IsAlive == false)
+                {
+                    _bulletList.RemoveAt(i);
+                    i--;
+                }
             }
         }
         public void Draw(SpriteBatch spriteBatch)

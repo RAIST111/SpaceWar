@@ -19,10 +19,12 @@ namespace SpaceWar
         //поля
         private Player _player;
         private Space _space;
-        private Asteroid _asteroid;
         
-
+        private Label _label;
+        private GameMode _GameMode = GameMode.playing;
         private List<Asteroid> _asteroids;
+        private List<Explosion> _explosions;
+        
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -39,6 +41,8 @@ namespace SpaceWar
             // _asteroid = new Asteroid();
             
             _asteroids = new List<Asteroid>();
+            _explosions = new List<Explosion>();
+            _label = new Label(Vector2.Zero, "Hello world", Color.White);
             base.Initialize();
 
 
@@ -55,6 +59,7 @@ namespace SpaceWar
             {
                 LoadAsteroid();
             }
+            _label.LoadContent(Content);
             // TODO: use this.Content to load your game content here
         }
 
@@ -68,8 +73,10 @@ namespace SpaceWar
             _space.Update();
            
             UpdateAsteroids();
+            CheckCollision();
+            UpdateExplosions(gameTime);
             // _asteroid.Update();
-
+            //_explosion.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -88,6 +95,13 @@ namespace SpaceWar
                 {
                     asteroid.Draw(_spriteBatch);
                 }
+
+                foreach(Explosion explosion in _explosions)
+                {
+                    explosion.Draw(_spriteBatch);
+                }
+
+                _label.Draw(_spriteBatch);  
             }
             _spriteBatch.End();
 
@@ -109,7 +123,7 @@ namespace SpaceWar
                     int y = random.Next(0, _graphics.PreferredBackBufferHeight);
                     asteroid.Position = new Vector2(x, -y);
                 }
-                if (asteroid.Collision.Intersects(_player.Collision))
+                if (!asteroid.IsAlive)
                 {
                     _asteroids.Remove(asteroid);
                     i--;
@@ -131,6 +145,53 @@ namespace SpaceWar
             int y = random.Next(0, _graphics.PreferredBackBufferHeight);
             asteroid.Position = new Vector2(x, -y);
             _asteroids.Add(asteroid);
+        }
+        private void CheckCollision()
+        {
+            foreach(Asteroid asteroid in _asteroids)
+            {
+                //кажджый астероид и игрока
+                if (asteroid.Collision.Intersects(_player.Collision))
+                {
+                    asteroid.IsAlive = false;
+                    Explosion explosion = new Explosion(asteroid.Position);
+                    Vector2 position = asteroid.Position;
+                    position = new Vector2(position.X - explosion.Width / 2, position.Y - explosion.Height / 2);
+                    position = new Vector2(position.X + asteroid.Width / 2, position.Y + asteroid.Height / 2);
+                    explosion.Position = position;
+                    explosion.LoadContent(Content);
+                    _explosions.Add(explosion);
+                }
+                // каждый астероид и каждую пулю
+                foreach ( Bullet bullet in _player.Bullets)
+                {
+                    if (asteroid.Collision.Intersects(bullet.Collision))
+                    {
+                        asteroid.IsAlive = false;
+                        bullet.IsAlive = false;
+                        Explosion explosion = new Explosion(asteroid.Position);
+                        Vector2 position = asteroid.Position;
+                        position = new Vector2(position.X - explosion.Width / 2, position.Y - explosion.Height / 2);
+                        position = new Vector2(position.X + asteroid.Width / 2, position.Y + asteroid.Height / 2);
+
+                        explosion.Position = position;
+                        explosion.LoadContent(Content);
+                        _explosions.Add(explosion);
+                    }
+                }
+            }
+        }
+        private void UpdateExplosions(GameTime gameTime)
+        {
+            for (int i = 0; i <_explosions.Count; i++)
+            {
+                _explosions[i].Update(gameTime);
+                if (!_explosions[i].IsAlive)
+                {
+                    _explosions.RemoveAt(i);
+                    i--;    
+                }
+            }
         }
     }
 }

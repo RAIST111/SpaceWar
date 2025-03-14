@@ -16,10 +16,15 @@ namespace SpaceWar.Classes
         {
             get { return _texture.Width; }
         }
+        public int Height
+        {
+            get { return _texture.Height; }
+        }
         public Rectangle Collision
         {
             get { return _collision; }
         }
+        public bool IsAlive { get; set; }
         public Vector2 Position
         {
             set { _position = value; }
@@ -36,6 +41,7 @@ namespace SpaceWar.Classes
         {
             _texture = null;
             _position = position;
+            IsAlive = true;
             _collision = new Rectangle((int)_position.X, (int)_position.Y, 0, 0);
         }
         public void LoadContent(ContentManager content)
@@ -45,7 +51,7 @@ namespace SpaceWar.Classes
         public void Update()
         {
             _position.Y += 2;
-            _collision = new Rectangle((int)_position.X, (int)_position.Y, 0, 0);
+            _collision = new Rectangle((int)_position.X, (int)_position.Y, _texture.Width, _texture.Height);
         }
         public void Draw(SpriteBatch spriteBatch)
         {
